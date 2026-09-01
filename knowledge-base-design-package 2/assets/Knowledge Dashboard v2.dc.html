@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F2F2F2;font-family:Arial,Helvetica,sans-serif;color:#1A1A1A;-webkit-font-smoothing:antialiased}
+a{color:#B0132B;text-decoration:none}
+a:hover{color:#8C0F22;text-decoration:underline}
+button,input,select,textarea{font-family:Arial,Helvetica,sans-serif}
+:focus-visible{outline:2px solid #B0132B;outline-offset:2px}
+@keyframes kspin{to{transform:rotate(360deg)}}
+@keyframes kfade{from{opacity:0}to{opacity:1}}
+@keyframes krise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kdrop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kpulse{0%{opacity:.35}50%{opacity:.85}100%{opacity:.35}}
+[data-tip]{position:relative}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#1A1A1A;color:#fff;font:400 12px/1.4 Arial,Helvetica,sans-serif;padding:6px 9px;white-space:nowrap;z-index:90;pointer-events:none}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#F2F2F2">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr">
+    <div style="background:#1A1A1A;color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="width:26px;height:26px;background:#B0132B;display:block"></span>
+        <span style="font:400 19px/1 Arial,Helvetica,sans-serif;letter-spacing:.2em;text-transform:uppercase">Knowledge</span>
+      </div>
+      <div style="max-width:520px;display:flex;flex-direction:column;gap:22px">
+        <h1 style="margin:0;font:400 42px/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.015em">Ask the wiki. Get answers you are permitted to see.</h1>
+        <p style="margin:0;font:400 17px/1.6 Arial,Helvetica,sans-serif;color:#CCCCCC;max-width:52ch">Permissions are resolved on every question. Pages are fetched with your own wiki session — the service never holds page text.</p>
+        <div style="display:flex;gap:28px;padding-top:18px;border-top:1px solid #4D4D4D">
+          <div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 22px/1 Arial,Helvetica,sans-serif">4</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#999">spaces readable</span></div>
+          <div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 22px/1 Arial,Helvetica,sans-serif">1,284</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#999">questions asked</span></div>
+          <div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 22px/1 Arial,Helvetica,sans-serif">71%</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#999">answered</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:22px;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#999">
+        <span>Internal use only</span><span>Service desk ext. 4400</span>
+      </div>
+    </div>
+
+    <div style="background:#fff;display:flex;align-items:center;justify-content:center;padding:56px 44px">
+      <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:24px">
+
+        <sc-if value="{{ authSuccess }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:24px;animation:kfade 200ms ease">
+            <div role="status" style="display:flex;gap:12px;padding:16px 18px;border:1px solid #BFD9C6;border-left:3px solid #1B6B3A;background:#F2F8F4">
+              <span aria-hidden="true" style="font:700 14px/1.5 Arial,Helvetica,sans-serif;color:#1B6B3A">✓</span>
+              <span style="font:400 14px/1.55 Arial,Helvetica,sans-serif">Signed in as {{ userName }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <h2 style="margin:0;font:400 26px/1.25 Arial,Helvetica,sans-serif">Opening the knowledge base</h2>
+              <p style="margin:0;font:400 15px/1.55 Arial,Helvetica,sans-serif;color:#666">Resolving the spaces you can read…</p>
+            </div>
+            <div style="height:4px;background:#E5E5E5;display:block"><span style="height:4px;width:70%;background:#B0132B;display:block;transition:width 400ms ease"></span></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ authForm }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <h2 style="margin:0;font:400 28px/1.2 Arial,Helvetica,sans-serif">Sign in</h2>
+              <p style="margin:0;font:400 15px/1.55 Arial,Helvetica,sans-serif;color:#666">Use your staff credentials. This machine is registered to {{ machineName }}.</p>
+            </div>
+
+            <sc-if value="{{ authBanner }}" hint-placeholder-val="{{ false }}">
+              <div role="alert" style="display:flex;gap:12px;padding:12px 16px;border:1px solid #EBC3C9;border-left:3px solid #B0132B;background:#FCF3F4">
+                <span aria-hidden="true" style="font:700 14px/1.5 Arial,Helvetica,sans-serif;color:#B0132B">!</span>
+                <span style="font:400 14px/1.5 Arial,Helvetica,sans-serif">{{ authBanner }}</span>
+              </div>
+            </sc-if>
+
+            <div role="tablist" style="display:flex;border:1px solid #D9D9D9">
+              <sc-for list="{{ authTabs }}" as="t" hint-placeholder-count="2">
+                <button type="button" role="tab" aria-selected="{{ t.on }}" onClick="{{ t.pick }}" style="flex:1;height:42px;border:0;cursor:pointer;font:400 14px/1 Arial,Helvetica,sans-serif;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ isCreds }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <label for="sid" style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#333">Staff ID</label>
+                  <input id="sid" value="{{ staffId }}" onChange="{{ onStaffId }}" onKeyDown="{{ onLoginKey }}" placeholder="e.g. 4471820" style="height:46px;padding:0 14px;border:1px solid {{ sidBorder }};background:#fff;font:400 16px/1 Arial,Helvetica,sans-serif;color:#1A1A1A;border-radius:2px" />
+                  <sc-if value="{{ sidError }}" hint-placeholder-val="{{ false }}">
+                    <span role="alert" style="display:flex;gap:6px;font:400 13px/1.5 Arial,Helvetica,sans-serif;color:#B0132B"><span aria-hidden="true">!</span>{{ sidError }}</span>
+                  </sc-if>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <label for="pwd" style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#333">Password</label>
+                  <input id="pwd" type="password" value="{{ password }}" onChange="{{ onPassword }}" onKeyDown="{{ onLoginKey }}" style="height:46px;padding:0 14px;border:1px solid {{ pwdBorder }};background:#fff;font:400 16px/1 Arial,Helvetica,sans-serif;color:#1A1A1A;border-radius:2px" />
+                  <sc-if value="{{ pwdError }}" hint-placeholder-val="{{ false }}">
+                    <span role="alert" style="display:flex;gap:6px;font:400 13px/1.5 Arial,Helvetica,sans-serif;color:#B0132B"><span aria-hidden="true">!</span>{{ pwdError }}</span>
+                  </sc-if>
+                </div>
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                  <input type="checkbox" sc-camel-default-checked="{{ trustDevice }}" onChange="{{ toggleTrust }}" style="accent-color:#B0132B;width:16px;height:16px" />
+                  <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#4D4D4D">Keep this machine registered for 30 days</span>
+                </label>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isSsoTab }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="border:1px solid #D9D9D9;background:#F8F8F8;padding:16px;display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 15px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ userName }} · {{ userEmail }}</span>
+                  <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#666">Detected from your desktop session. Continuing signs you in with the same wiki permissions.</span>
+                </div>
+                <div style="display:flex;gap:12px;padding:14px 16px;border:1px solid #C3D4E0;border-left:3px solid #0B3B60;background:#F3F7FA">
+                  <span aria-hidden="true" style="font:700 13px/1.5 Arial,Helvetica,sans-serif;color:#0B3B60">i</span>
+                  <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#1A1A1A">Single sign-on adds no extra step — no page is fetched without your own session.</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <button type="button" onClick="{{ submitLogin }}" style="height:48px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 16px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#8C0F22;border-color:#8C0F22">
+              <sc-if value="{{ authLoading }}" hint-placeholder-val="{{ false }}">
+                <span aria-hidden="true" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:kspin .7s linear infinite;display:block"></span>
+              </sc-if>
+              {{ loginLabel }}
+            </button>
+
+            <div style="display:flex;align-items:center;gap:16px;padding-top:20px;border-top:1px solid #E5E5E5">
+              <button type="button" onClick="{{ forgotPassword }}" style="border:0;background:none;padding:0;cursor:pointer;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#B0132B">Forgotten your password?</button>
+              <span style="margin-left:auto;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#808080">{{ serviceHost }}</span>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;flex-direction:column;min-width:1100px">
+  <div style="height:4px;background:#B0132B"></div>
+
+  <header style="background:#fff;border-bottom:1px solid #D9D9D9;flex:none;z-index:40">
+    <div style="padding:0 24px;height:60px;display:flex;align-items:center;gap:20px">
+      <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ toggleSidebar }}" aria-label="{{ sidebarToggleLabel }}" aria-expanded="{{ sidebarOpen }}" data-tip="{{ sidebarToggleLabel }}" style="width:34px;height:34px;border:1px solid #D9D9D9;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;border-radius:2px" style-hover="background:#F8F8F8;border-color:#808080">
+          <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" style="display:block">
+            <rect x="1" y="2" width="14" height="12" fill="none" stroke="#4D4D4D" stroke-width="1.5"></rect>
+            <line x1="6" y1="2" x2="6" y2="14" stroke="#4D4D4D" stroke-width="1.5"></line>
+          </svg>
+        </button>
+      </sc-if>
+      <button type="button" onClick="{{ goChat }}" style="display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;padding:0;flex:none">
+        <span style="width:20px;height:20px;background:#B0132B;display:block"></span>
+        <span style="font:400 16px/1 Arial,Helvetica,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#000">Knowledge</span>
+      </button>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+        <div ref="{{ menuHostRef }}" style="position:relative">
+          <button type="button" onClick="{{ toggleMenu }}" aria-expanded="{{ menuOpen }}" aria-haspopup="menu" style="display:flex;align-items:center;gap:10px;border:1px solid {{ menuBorder }};background:{{ menuBg }};cursor:pointer;padding:5px 10px 5px 6px;border-radius:2px" style-hover="background:#F8F8F8;border-color:#808080">
+            <span style="width:28px;height:28px;border:1px solid #CCCCCC;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font:400 11px/1 Arial,Helvetica,sans-serif;color:#4D4D4D;flex:none">{{ userInitials }}</span>
+            <span style="font:400 13px/1.3 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ userName }}</span>
+            <span aria-hidden="true" style="font:400 9px/1 Arial,Helvetica,sans-serif;color:#808080;padding-left:2px">▼</span>
+          </button>
+
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div role="menu" style="position:absolute;top:44px;right:0;width:250px;background:#fff;border:1px solid #D9D9D9;box-shadow:0 4px 12px rgba(0,0,0,.10);z-index:60;animation:kdrop 120ms ease">
+              <div style="padding:14px 16px;border-bottom:1px solid #E5E5E5;display:flex;flex-direction:column;gap:3px">
+                <span style="font:500 14px/1.4 Arial,Helvetica,sans-serif;color:#000">{{ userName }}</span>
+                <span style="font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#666">{{ userEmail }}</span>
+                <span style="font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#808080">{{ spacesLabel }}</span>
+              </div>
+              <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="3">
+                <button type="button" role="menuitem" onClick="{{ m.go }}" style="width:100%;text-align:left;padding:12px 16px;border:0;border-bottom:1px solid #F2F2F2;background:#fff;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:{{ m.fg }};cursor:pointer;display:flex;align-items:center;gap:10px" style-hover="background:#F8F8F8">
+                  {{ m.label }}
+                  <sc-if value="{{ m.hasHint }}" hint-placeholder-val="{{ false }}">
+                    <span style="margin-left:auto;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#808080">{{ m.hint }}</span>
+                  </sc-if>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div style="flex:1;display:flex;align-items:stretch;min-height:0">
+
+    <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+    <aside style="{{ sidebarStyle }}">
+      <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;height:100%">
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid #E5E5E5;flex:none">
+            <button type="button" onClick="{{ newConversation }}" style="height:42px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#8C0F22;border-color:#8C0F22">
+              <span aria-hidden="true" style="font:400 15px/1 Arial,Helvetica,sans-serif">+</span>New conversation
+            </button>
+            <div style="display:flex;align-items:center;gap:8px;height:36px;padding:0 10px;border:1px solid #D9D9D9;background:#fff;border-radius:2px">
+              <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" style="display:block;flex:none">
+                <circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="#808080" stroke-width="1.5"></circle>
+                <line x1="10" y1="10" x2="14" y2="14" stroke="#808080" stroke-width="1.5"></line>
+              </svg>
+              <input aria-label="Search conversations" placeholder="Search conversations" value="{{ search }}" onChange="{{ onSearch }}" style="border:0;outline:none;flex:1;font:400 13px/1 Arial,Helvetica,sans-serif;background:transparent" />
+              <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}">
+                <button type="button" onClick="{{ clearSearch }}" aria-label="Clear search" style="border:0;background:none;padding:0;cursor:pointer;font:400 12px/1 Arial,Helvetica,sans-serif;color:#808080" style-hover="color:#B0132B">✕</button>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="flex:1;overflow-y:auto;min-height:0">
+            <div style="padding:16px 16px 6px">
+              <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#999">Conversations</span>
+            </div>
+
+            <sc-if value="{{ noConvos }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:20px 16px;display:flex;flex-direction:column;gap:6px">
+                <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ emptyConvoTitle }}</span>
+                <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#666">{{ emptyConvoBody }}</span>
+              </div>
+            </sc-if>
+
+            <sc-for list="{{ convos }}" as="c" hint-placeholder-count="5">
+              <div style="{{ c.rowStyle }}">
+                <button type="button" onClick="{{ c.open }}" aria-current="{{ c.active }}" style="flex:1;min-width:0;text-align:left;border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;gap:4px">
+                  <span style="display:flex;align-items:center;gap:9px;max-width:196px">
+                    <span style="width:6px;height:6px;background:{{ c.dot }};display:block;flex:none"></span>
+                    <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:{{ c.titleFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.title }}</span>
+                  </span>
+                </button>
+                <button type="button" onClick="{{ c.remove }}" aria-label="Delete conversation" style="border:0;background:none;padding:4px;cursor:pointer;font:400 12px/1 Arial,Helvetica,sans-serif;color:#999;flex:none" style-hover="color:#B0132B">✕</button>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="padding:8px 16px 14px;border-top:1px solid #E5E5E5;flex:none;display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ sideLinks }}" as="l" hint-placeholder-count="2">
+              <button type="button" onClick="{{ l.go }}" style="width:100%;text-align:left;padding:10px 10px;border:0;border-left:3px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};font:400 14px/1.4 Arial,Helvetica,sans-serif;cursor:pointer" style-hover="background:#F8F8F8">{{ l.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sidebarClosed }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;height:100%">
+          <button type="button" onClick="{{ newConversation }}" aria-label="New conversation" data-tip="New conversation" style="width:38px;height:38px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 18px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;flex:none" style-hover="background:#8C0F22;border-color:#8C0F22">+</button>
+          <button type="button" onClick="{{ expandForSearch }}" aria-label="Search conversations" data-tip="Search conversations" style="width:38px;height:38px;border:1px solid #D9D9D9;background:#fff;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#F8F8F8;border-color:#808080">
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" style="display:block">
+              <circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="#4D4D4D" stroke-width="1.5"></circle>
+              <line x1="10" y1="10" x2="14" y2="14" stroke="#4D4D4D" stroke-width="1.5"></line>
+            </svg>
+          </button>
+          <span style="width:22px;height:1px;background:#E5E5E5;display:block;margin:4px 0"></span>
+          <sc-for list="{{ railConvos }}" as="c" hint-placeholder-count="4">
+            <button type="button" onClick="{{ c.open }}" aria-label="{{ c.title }}" data-tip="{{ c.title }}" style="{{ c.railStyle }}">{{ c.initial }}</button>
+          </sc-for>
+          <span style="margin-top:auto"></span>
+          <sc-for list="{{ railLinks }}" as="l" hint-placeholder-count="2">
+            <button type="button" onClick="{{ l.go }}" aria-label="{{ l.label }}" data-tip="{{ l.label }}" style="{{ l.railStyle }}">{{ l.glyph }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </aside>
+    </sc-if>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:#FFFFFF">
+      <sc-if value="{{ vChat }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+
+          <sc-if value="{{ noActive }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px">
+              <div style="max-width:520px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center">
+                <span style="width:40px;height:40px;border:1px solid #CCCCCC;background:#fff;display:block"></span>
+                <span style="font:400 22px/1.3 Arial,Helvetica,sans-serif;color:#000">No conversation selected</span>
+                <span style="font:400 15px/1.6 Arial,Helvetica,sans-serif;color:#666">History is local to this machine and you have cleared it. Start a new conversation to ask the wiki again.</span>
+                <button type="button" onClick="{{ newConversation }}" style="height:44px;padding:0 20px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 15px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px" style-hover="background:#8C0F22;border-color:#8C0F22">New conversation</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasActive }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+              <div style="flex:1;overflow-y:auto;min-height:0;padding:32px 32px 40px">
+                <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:32px">
+
+                  <sc-if value="{{ isEmptyConvo }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:24px;padding-top:56px;align-items:center;text-align:center">
+                      <span style="width:26px;height:26px;background:#B0132B;display:block"></span>
+                      <h1 style="margin:0;font:400 28px/1.25 Arial,Helvetica,sans-serif;letter-spacing:-.01em;color:#000">Ask the wiki</h1>
+                      <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+                        <sc-for list="{{ starters }}" as="x" hint-placeholder-count="3">
+                          <button type="button" onClick="{{ x.go }}" style="width:100%;text-align:left;border:1px solid #E5E5E5;background:#fff;cursor:pointer;padding:14px 16px;font:400 15px/1.45 Arial,Helvetica,sans-serif;color:#1A1A1A;border-radius:2px" style-hover="border-color:#808080;background:#F8F8F8">{{ x.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:10px;animation:kfade 200ms ease">
+
+                      <sc-if value="{{ m.isUser }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;justify-content:flex-end">
+                          <span style="max-width:72%;background:#F2F2F2;border:1px solid #E5E5E5;color:#1A1A1A;padding:12px 16px;font:400 16px/1.5 Arial,Helvetica,sans-serif;text-wrap:pretty">{{ m.text }}</span>
+                        </div>
+                      </sc-if>
+
+                      <sc-if value="{{ m.isAssistant }}" hint-placeholder-val="{{ true }}">
+                        <div style="display:flex;gap:14px;align-items:flex-start">
+                          <span style="width:28px;height:28px;background:#B0132B;display:block;flex:none;margin-top:2px"></span>
+                          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+
+                            <sc-if value="{{ m.answered }}" hint-placeholder-val="{{ true }}">
+                              <p style="margin:0;font:400 16px/1.7 Arial,Helvetica,sans-serif;color:#1A1A1A;text-wrap:pretty">{{ m.text }}</p>
+                              <sc-if value="{{ m.isLong }}" hint-placeholder-val="{{ false }}">
+                                <button type="button" onClick="{{ m.toggleExpand }}" style="align-self:flex-start;border:0;background:none;padding:0;cursor:pointer;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#B0132B">{{ m.expandLabel }}</button>
+                              </sc-if>
+
+                              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <sc-for list="{{ m.sources }}" as="r" hint-placeholder-count="3">
+                                  <button type="button" onClick="{{ r.open }}" title="{{ r.title }}" style="display:inline-flex;align-items:center;gap:7px;max-width:230px;padding:5px 10px;border:1px solid #E5E5E5;background:#fff;cursor:pointer;border-radius:2px" style-hover="border-color:#808080;background:#F8F8F8">
+                                    <span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ r.n }}</span>
+                                    <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#4D4D4D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.title }}</span>
+                                  </button>
+                                </sc-for>
+                                <sc-if value="{{ m.hasWithheld }}" hint-placeholder-val="{{ true }}">
+                                  <span title="Withheld pages are counted, never named" style="font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#8A5A00;white-space:nowrap">{{ m.withheldLabel }}</span>
+                                </sc-if>
+                                <button type="button" onClick="{{ m.toggleTrace }}" aria-expanded="{{ m.traceOpen }}" style="margin-left:auto;border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#808080;flex:none;white-space:nowrap" style-hover="color:#B0132B">{{ m.traceCaret }}</button>
+                              </div>
+                            </sc-if>
+
+                            <sc-if value="{{ m.none }}" hint-placeholder-val="{{ false }}">
+                              <div style="display:flex;flex-direction:column;gap:14px">
+                                <p role="alert" style="margin:0;font:400 16px/1.7 Arial,Helvetica,sans-serif;color:#1A1A1A;text-wrap:pretty">
+                                  <span aria-hidden="true" style="color:#8A5A00">! </span>No answer — the search returned 3 links and none could be fetched with your credentials.
+                                </p>
+                                <div style="display:flex;flex-direction:column;gap:1px;background:#E5E5E5;border:1px solid #E5E5E5">
+                                  <sc-for list="{{ m.returned }}" as="r" hint-placeholder-count="3">
+                                    <div style="background:#fff;padding:11px 14px;display:flex;align-items:center;gap:12px">
+                                      <span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ r.n }}</span>
+                                      <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:{{ r.titleColor }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.titleText }}</span>
+                                      <span style="margin-left:auto;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:{{ r.chip.fg }};white-space:nowrap;flex:none">{{ r.chip.text }}</span>
+                                    </div>
+                                  </sc-for>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:12px">
+                                  <button type="button" onClick="{{ requestAccess }}" style="height:36px;padding:0 14px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 13px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;white-space:nowrap;flex:none" style-hover="background:#8C0F22;border-color:#8C0F22">Request access</button>
+                                  <button type="button" onClick="{{ backToBrowse }}" style="border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#B0132B;white-space:nowrap;flex:none">Browse by facet</button>
+                                  <button type="button" onClick="{{ m.toggleTrace }}" aria-expanded="{{ m.traceOpen }}" style="margin-left:auto;border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#808080;flex:none;white-space:nowrap" style-hover="color:#B0132B">{{ m.traceCaret }}</button>
+                                </div>
+                              </div>
+                            </sc-if>
+
+                            <sc-if value="{{ m.refused }}" hint-placeholder-val="{{ false }}">
+                              <div role="alert" style="background:#1A1A1A;padding:22px;display:flex;flex-direction:column;gap:8px">
+                                <span style="font:400 19px/1.35 Arial,Helvetica,sans-serif;color:#fff">The search was refused, not run.</span>
+                                <span style="font:400 15px/1.6 Arial,Helvetica,sans-serif;color:#CCCCCC">Permissions could not be resolved, so the service failed closed. Nothing was searched.</span>
+                              </div>
+                              <div style="display:flex;align-items:center;gap:12px">
+                                <span style="font:400 13px/1.5 Arial,Helvetica,sans-serif;color:#808080">Last successful check 47 min ago</span>
+                                <span style="margin-left:auto;display:flex;align-items:center;gap:14px">
+                                  <button type="button" onClick="{{ checkStatus }}" style="border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#B0132B;white-space:nowrap;flex:none">Service status</button>
+                                  <button type="button" onClick="{{ retrySearch }}" style="height:36px;padding:0 14px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 13px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;white-space:nowrap;flex:none" style-hover="background:#8C0F22;border-color:#8C0F22">Retry</button>
+                                </span>
+                              </div>
+                            </sc-if>
+
+                            <sc-if value="{{ m.traceOpen }}" hint-placeholder-val="{{ false }}">
+                              <div style="background:#fff;border:1px solid #D9D9D9;animation:kfade 200ms ease">
+                                <div style="padding:14px 20px;border-bottom:1px solid #E5E5E5">
+                                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">How this answer was found</span>
+                                </div>
+                                <sc-for list="{{ m.steps }}" as="st" hint-placeholder-count="6">
+                                  <div style="padding:11px 20px;border-bottom:1px solid #F2F2F2;display:flex;align-items:center;gap:12px">
+                                    <span style="width:22px;height:22px;border:1px solid #D9D9D9;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font:400 11px/1 ui-monospace,Menlo,monospace;color:#4D4D4D;flex:none">{{ st.n }}</span>
+                                    <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ st.label }}</span>
+                                    <sc-if value="{{ st.hasBadge }}" hint-placeholder-val="{{ false }}">
+                                      <span style="padding:2px 6px;border:1px solid #D9D9D9;background:#F8F8F8;color:#4D4D4D;font:400 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.06em;flex:none">{{ st.badge }}</span>
+                                    </sc-if>
+                                    <span style="margin-left:auto;font:400 12px/1.4 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ st.ms }}</span>
+                                  </div>
+                                </sc-for>
+                                <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px">
+                                  <div style="display:flex;flex-direction:column;gap:8px">
+                                    <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#666">{{ termCount }}</span>
+                                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                                      <sc-for list="{{ terms }}" as="t" hint-placeholder-count="3">
+                                        <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 8px 5px 10px;border:1px solid #D9D9D9;background:#fff;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">
+                                          {{ t.label }}
+                                          <button type="button" onClick="{{ t.remove }}" aria-label="Remove term" style="border:0;background:none;padding:0;cursor:pointer;font:400 12px/1 Arial,Helvetica,sans-serif;color:#808080" style-hover="color:#B0132B">✕</button>
+                                        </span>
+                                      </sc-for>
+                                    </div>
+                                  </div>
+                                  <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#666">The model can only add candidates — it can never remove your wording.</span>
+                                </div>
+                              </div>
+                            </sc-if>
+                          </div>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+
+                  <sc-if value="{{ sending }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:14px;align-items:flex-start;animation:kfade 200ms ease">
+                      <span style="width:22px;height:22px;background:#B0132B;display:block;flex:none;margin-top:3px"></span>
+                      <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+                        <span style="height:13px;width:86%;background:#F2F2F2;display:block;animation:kpulse 1.4s ease-in-out infinite"></span>
+                        <span style="height:13px;width:94%;background:#F2F2F2;display:block;animation:kpulse 1.4s ease-in-out infinite"></span>
+                        <span style="height:13px;width:62%;background:#F2F2F2;display:block;animation:kpulse 1.4s ease-in-out infinite"></span>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <div style="flex:none;background:#fff;padding:8px 32px 24px">
+                <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;gap:10px;align-items:flex-end;border:1px solid #D9D9D9;background:#fff;padding:10px 10px 10px 16px;border-radius:2px">
+                    <textarea aria-label="Ask a question" rows="1" placeholder="Ask the wiki…" value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onComposerKey }}" style="flex:1;border:0;outline:none;resize:none;font:400 16px/1.6 Arial,Helvetica,sans-serif;color:#1A1A1A;background:transparent;padding:6px 0"></textarea>
+                    <button type="button" onClick="{{ sendMessage }}" aria-label="Send" style="{{ sendStyle }}">
+                      <sc-if value="{{ sending }}" hint-placeholder-val="{{ false }}">
+                        <span aria-hidden="true" style="width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:kspin .7s linear infinite;display:block"></span>
+                      </sc-if>
+                      <sc-if value="{{ notSending }}" hint-placeholder-val="{{ true }}">
+                        <span aria-hidden="true" style="font:400 15px/1 Arial,Helvetica,sans-serif">↑</span>
+                      </sc-if>
+                    </button>
+                  </div>
+                  <span style="font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#999;text-align:center">Answers come only from pages you can read</span>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vBrowse }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:32px">
+          <div style="max-width:1180px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <h1 style="margin:0;font:400 30px/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.01em;color:#000">Browse by facet</h1>
+              <p style="margin:0;font:400 15px/1.55 Arial,Helvetica,sans-serif;color:#666">For when you would rather look than ask. Only pages you can read are listed.</p>
+            </div>
+
+            <div style="display:flex;gap:24px;align-items:flex-start">
+              <nav style="width:252px;flex:none;background:#fff;border:1px solid #D9D9D9">
+                <sc-for list="{{ facetGroups }}" as="g" hint-placeholder-count="3">
+                  <div style="border-bottom:1px solid #E5E5E5">
+                    <div style="padding:14px 20px 8px">
+                      <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">{{ g.name }}</span>
+                    </div>
+                    <sc-for list="{{ g.options }}" as="o" hint-placeholder-count="4">
+                      <button type="button" onClick="{{ o.pick }}" aria-pressed="{{ o.on }}" style="width:100%;text-align:left;padding:10px 20px;border:0;border-left:3px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font:400 14px/1.4 Arial,Helvetica,sans-serif;cursor:pointer" style-hover="background:#F8F8F8">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </nav>
+
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Filtered by</span>
+                  <sc-if value="{{ hasFacets }}" hint-placeholder-val="{{ true }}">
+                    <sc-for list="{{ activeFacets }}" as="f" hint-placeholder-count="2">
+                      <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 8px 5px 10px;border:1px solid #D9D9D9;background:#F8F8F8;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A;white-space:nowrap">
+                        {{ f.label }}
+                        <button type="button" onClick="{{ f.clear }}" aria-label="Remove filter" style="border:0;background:none;padding:0;cursor:pointer;font:400 12px/1 Arial,Helvetica,sans-serif;color:#808080" style-hover="color:#B0132B">✕</button>
+                      </span>
+                    </sc-for>
+                  </sc-if>
+                  <span style="margin-left:auto;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ resultCount }}</span>
+                </div>
+
+                <sc-if value="{{ resultsEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#fff;border:1px solid #D9D9D9;padding:52px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+                    <span style="font:400 20px/1.3 Arial,Helvetica,sans-serif;color:#000">No pages match these facets</span>
+                    <span style="max-width:52ch;font:400 15px/1.6 Arial,Helvetica,sans-serif;color:#666">The active filters are the likely cause: {{ emptyCause }}</span>
+                    <button type="button" onClick="{{ clearFacets }}" style="height:40px;padding:0 18px;border:1px solid #808080;background:#fff;font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px" style-hover="border-color:#1A1A1A">Clear all filters</button>
+                  </div>
+                </sc-if>
+
+                <sc-for list="{{ results }}" as="p" hint-placeholder-count="3">
+                  <div style="background:#fff;border:1px solid #D9D9D9;padding:20px 24px;display:flex;flex-direction:column;gap:12px" style-hover="border-color:#808080">
+                    <div style="display:flex;align-items:flex-start;gap:16px">
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                        <button type="button" onClick="{{ p.open }}" style="text-align:left;border:0;background:none;padding:0;cursor:pointer;font:500 17px/1.35 Arial,Helvetica,sans-serif;color:#1A1A1A" style-hover="color:#B0132B">{{ p.title }}</button>
+                        <span style="font:400 12px/1.5 Arial,Helvetica,sans-serif;color:#808080">{{ p.crumb }}</span>
+                      </div>
+                      <button type="button" onClick="{{ openInWiki }}" style="margin-left:auto;border:0;background:none;padding:0;cursor:pointer;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#B0132B;flex:none;white-space:nowrap">Open in wiki ↗</button>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <sc-for list="{{ p.tags }}" as="t" hint-placeholder-count="3">
+                        <span style="padding:4px 8px;border:1px solid #D9D9D9;background:#F8F8F8;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#4D4D4D;white-space:nowrap">{{ t }}</span>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;max-width:980px;border-left:3px solid #808080;background:#F8F8F8;border-top:1px solid #D9D9D9;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:14px 18px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:#4D4D4D">{{ note }}</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vPage }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:32px">
+          <div style="max-width:1180px;display:flex;flex-direction:column;gap:22px">
+            <button type="button" onClick="{{ backToBrowse }}" style="align-self:flex-start;border:0;background:none;padding:0;cursor:pointer;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#B0132B">← Browse</button>
+
+            <div style="display:flex;gap:24px;align-items:flex-start">
+              <div style="flex:1.8;min-width:0;display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <h1 style="margin:0;font:400 28px/1.25 Arial,Helvetica,sans-serif;letter-spacing:-.01em;color:#000;max-width:36ch;text-wrap:pretty">{{ page.title }}</h1>
+                  <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#808080">{{ pageCrumb }}</span>
+                </div>
+
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font:400 16px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">No page text is stored here.</span>
+                    <span style="font:400 14px/1.55 Arial,Helvetica,sans-serif;color:#666">Reading happens in the wiki, under wiki permissions.</span>
+                  </div>
+                  <span style="margin-left:auto;display:flex;gap:12px;flex:none">
+                    <button type="button" onClick="{{ askAboutPage }}" style="height:44px;padding:0 18px;border:1px solid #808080;background:#fff;font:400 15px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;white-space:nowrap" style-hover="border-color:#1A1A1A">Ask about this page</button>
+                    <button type="button" onClick="{{ openInWiki }}" style="height:44px;padding:0 20px;border:1px solid #B0132B;background:#B0132B;color:#fff;font:400 15px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;white-space:nowrap" style-hover="background:#8C0F22;border-color:#8C0F22">Open in wiki ↗</button>
+                  </span>
+                </div>
+
+                <div style="background:#fff;border:1px solid #D9D9D9">
+                  <div style="padding:16px 22px;border-bottom:1px solid #E5E5E5;display:flex;align-items:baseline;gap:10px">
+                    <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Facets</span>
+                    <span style="font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#808080">How the page was classified, and by what</span>
+                  </div>
+                  <sc-for list="{{ pageFacets }}" as="f" hint-placeholder-count="4">
+                    <div style="padding:13px 22px;border-bottom:1px solid #F2F2F2;display:flex;align-items:center;gap:16px">
+                      <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666;min-width:140px">{{ f.name }}</span>
+                      <span style="font:400 15px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ f.value }}</span>
+                      <span style="margin-left:auto;display:flex;align-items:center;gap:12px;flex:none">
+                        <span style="padding:3px 8px;border:1px solid {{ f.badgeBd }};background:{{ f.badgeBg }};color:{{ f.badgeFg }};font:400 10px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.06em">{{ f.by }}</span>
+                        <span style="font:400 13px/1.4 ui-monospace,Menlo,monospace;color:#4D4D4D;min-width:34px;text-align:right">{{ f.conf }}</span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="flex:1;min-width:320px;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Parent pages</span>
+                  <div style="display:flex;flex-direction:column;gap:10px;font:400 14px/1.45 Arial,Helvetica,sans-serif;color:#1A1A1A">
+                    <span>Platform Engineering</span>
+                    <span style="padding-left:16px">Security</span>
+                    <span style="padding-left:32px">Credentials</span>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Read at ingest</span>
+                  <div style="display:flex;flex-direction:column;gap:10px;font:400 14px/1.45 Arial,Helvetica,sans-serif">
+                    <span style="display:flex;gap:10px;align-items:center"><span aria-hidden="true" style="color:#1B6B3A">✓</span>Title</span>
+                    <span style="display:flex;gap:10px;align-items:center"><span aria-hidden="true" style="color:#1B6B3A">✓</span>Breadcrumb</span>
+                    <span style="display:flex;gap:10px;align-items:center"><span aria-hidden="true" style="color:#1B6B3A">✓</span>Parent pages</span>
+                    <span style="display:flex;gap:10px;align-items:center;color:#808080"><span aria-hidden="true">✕</span>Page body — never read</span>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Relationships</span>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#D9D9D9;border:1px solid #D9D9D9">
+                    <div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:5px"><span style="font:400 24px/1 Arial,Helvetica,sans-serif">2</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666">links in</span></div>
+                    <div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:5px"><span style="font:400 24px/1 Arial,Helvetica,sans-serif">2</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666">links out</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;max-width:980px;border-left:3px solid #808080;background:#F8F8F8;border-top:1px solid #D9D9D9;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:14px 18px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:#4D4D4D">{{ note }}</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vInsights }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:32px">
+          <div style="max-width:1280px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <h1 style="margin:0;font:400 30px/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.01em;color:#000">Insights</h1>
+                <p style="margin:0;font:400 15px/1.55 Arial,Helvetica,sans-serif;color:#666">What people ask, what comes back, and what the wiki is missing.</p>
+              </div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+                <div role="group" aria-label="Scope" style="display:flex;border:1px solid #D9D9D9">
+                  <sc-for list="{{ scopes }}" as="v" hint-placeholder-count="2">
+                    <button type="button" onClick="{{ v.pick }}" style="height:42px;padding:0 18px;border:0;background:{{ v.bg }};color:{{ v.fg }};font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer">{{ v.label }}</button>
+                  </sc-for>
+                </div>
+                <select aria-label="Reporting period" value="{{ period }}" onChange="{{ onPeriod }}" style="height:42px;padding:0 12px;border:1px solid #808080;background:#fff;font:400 14px/1 Arial,Helvetica,sans-serif;border-radius:2px">
+                  <option>Last 30 days</option><option>Last 7 days</option><option>Last quarter</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:#D9D9D9;border:1px solid #D9D9D9">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="6">
+                <div style="background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+                  <span style="font:400 12px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#666">{{ k.label }}</span>
+                  <span style="font:400 29px/1 Arial,Helvetica,sans-serif;color:#000">{{ k.value }}</span>
+                  <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:{{ k.color }}"><span aria-hidden="true">{{ k.arrow }}</span> {{ k.delta }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:#fff;border:1px solid #D9D9D9;padding:24px;display:flex;flex-direction:column;gap:20px">
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                <h2 style="margin:0;font:500 19px/1.3 Arial,Helvetica,sans-serif">Asked, answered and unanswered</h2>
+                <div style="display:flex;gap:16px;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666">
+                  <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:0;border-top:2px dashed #1A1A1A;display:block"></span>asked</span>
+                  <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:2px;background:#1B6B3A;display:block"></span>answered</span>
+                  <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:0;border-top:2px dotted #B0132B;display:block"></span>no answer</span>
+                </div>
+                <div role="group" aria-label="Granularity" style="margin-left:auto;display:flex;border:1px solid #D9D9D9">
+                  <sc-for list="{{ grains }}" as="v" hint-placeholder-count="2">
+                    <button type="button" onClick="{{ v.pick }}" style="height:34px;padding:0 14px;border:0;background:{{ v.bg }};color:{{ v.fg }};font:400 13px/1 Arial,Helvetica,sans-serif;cursor:pointer">{{ v.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <svg sc-camel-view-box="0 0 840 200" sc-camel-preserve-aspect-ratio="none" role="img" aria-label="Questions asked, answered and unanswered over the period" style="width:100%;height:200px;display:block">
+                <line x1="0" y1="190" x2="840" y2="190" stroke="#E5E5E5" stroke-width="1"></line>
+                <line x1="0" y1="130" x2="840" y2="130" stroke="#F2F2F2" stroke-width="1"></line>
+                <line x1="0" y1="70" x2="840" y2="70" stroke="#F2F2F2" stroke-width="1"></line>
+                <polyline points="{{ trendAsked }}" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-dasharray="6 4"></polyline>
+                <polyline points="{{ trendAnswered }}" fill="none" stroke="#1B6B3A" stroke-width="2"></polyline>
+                <polyline points="{{ trendNone }}" fill="none" stroke="#B0132B" stroke-width="2" stroke-dasharray="2 4"></polyline>
+              </svg>
+              <div style="display:flex;justify-content:space-between;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:#808080">
+                <sc-for list="{{ trendLabels }}" as="l" hint-placeholder-count="5"><span>{{ l.label }}</span></sc-for>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+              <div style="background:#fff;border:1px solid #D9D9D9">
+                <div style="padding:18px 20px;border-bottom:1px solid #D9D9D9;display:flex;flex-direction:column;gap:3px">
+                  <h2 style="margin:0;font:500 17px/1.3 Arial,Helvetica,sans-serif">Most asked</h2>
+                  <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#808080">Click to ask it yourself</span>
+                </div>
+                <sc-for list="{{ mostAsked }}" as="r" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ r.go }}" style="width:100%;text-align:left;border:0;border-bottom:1px solid #F2F2F2;background:none;cursor:pointer;padding:14px 20px;display:flex;align-items:center;gap:12px" style-hover="background:#F8F8F8">
+                    <span style="font:400 12px/1.4 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ r.rank }}</span>
+                    <span style="font:400 14px/1.45 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ r.q }}</span>
+                    <span style="margin-left:auto;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A;flex:none">{{ r.n }}</span>
+                  </button>
+                </sc-for>
+              </div>
+
+              <div style="background:#fff;border:1px solid #EBC3C9;border-top:3px solid #B0132B">
+                <div style="padding:18px 20px;border-bottom:1px solid #E5E5E5;display:flex;flex-direction:column;gap:3px">
+                  <h2 style="margin:0;font:500 17px/1.3 Arial,Helvetica,sans-serif">Coverage gaps</h2>
+                  <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#808080">Asked repeatedly, never answered</span>
+                </div>
+                <sc-for list="{{ gaps }}" as="r" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ r.go }}" style="width:100%;text-align:left;border:0;border-bottom:1px solid #F2F2F2;background:none;cursor:pointer;padding:14px 20px;display:flex;align-items:center;gap:12px" style-hover="background:#F8F8F8">
+                    <span style="font:400 12px/1.4 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ r.rank }}</span>
+                    <span style="font:400 14px/1.45 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ r.q }}</span>
+                    <span style="margin-left:auto;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#B0132B;flex:none">{{ r.n }}</span>
+                  </button>
+                </sc-for>
+              </div>
+
+              <div style="background:#fff;border:1px solid #D9D9D9">
+                <div style="padding:18px 20px;border-bottom:1px solid #D9D9D9;display:flex;flex-direction:column;gap:3px">
+                  <h2 style="margin:0;font:500 17px/1.3 Arial,Helvetica,sans-serif">Most cited pages</h2>
+                  <span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#808080">Answers drawn from</span>
+                </div>
+                <sc-for list="{{ cited }}" as="r" hint-placeholder-count="4">
+                  <div style="border-bottom:1px solid #F2F2F2;padding:14px 20px;display:flex;align-items:center;gap:12px">
+                    <span style="font:400 12px/1.4 ui-monospace,Menlo,monospace;color:#808080;flex:none">{{ r.rank }}</span>
+                    <span style="font:400 14px/1.45 Arial,Helvetica,sans-serif;color:#1A1A1A">{{ r.q }}</span>
+                    <span style="margin-left:auto;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#1A1A1A;flex:none">{{ r.n }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;max-width:980px;border-left:3px solid #808080;background:#F8F8F8;border-top:1px solid #D9D9D9;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:14px 18px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:#4D4D4D">{{ note }}</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vAccount }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:32px">
+          <div style="max-width:940px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <h1 style="margin:0;font:400 30px/1.15 Arial,Helvetica,sans-serif;letter-spacing:-.01em;color:#000">Account and profile</h1>
+              <p style="margin:0;font:400 15px/1.55 Arial,Helvetica,sans-serif;color:#666">Session and permission facts. The product holds no profile beyond what your wiki session provides.</p>
+            </div>
+
+            <div style="display:flex;gap:24px;align-items:flex-start">
+              <div style="flex:1;background:#fff;border:1px solid #D9D9D9;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <span style="width:44px;height:44px;border:1px solid #CCCCCC;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font:400 15px/1 Arial,Helvetica,sans-serif;color:#4D4D4D;flex:none">{{ userInitials }}</span>
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                      <span style="font:500 17px/1.4 Arial,Helvetica,sans-serif;color:#000">{{ userName }}</span>
+                      <span style="font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#666">{{ userEmail }}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:12px;font:400 14px/1.5 Arial,Helvetica,sans-serif;padding-top:16px;border-top:1px solid #E5E5E5">
+                    <div style="display:flex;gap:16px;padding-bottom:12px;border-bottom:1px solid #F2F2F2"><span style="color:#666;min-width:170px">Sign-in method</span><span>Staff credentials</span></div>
+                    <div style="display:flex;gap:16px;padding-bottom:12px;border-bottom:1px solid #F2F2F2"><span style="color:#666;min-width:170px">Machine</span><span>{{ machineName }} · registered</span></div>
+                    <div style="display:flex;gap:16px;padding-bottom:12px;border-bottom:1px solid #F2F2F2"><span style="color:#666;min-width:170px">Service</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ serviceHost }}</span></div>
+                    <div style="display:flex;gap:16px"><span style="color:#666;min-width:170px">Permissions refreshed</span><span>4 min ago · every 15 min</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="width:320px;flex:none;display:flex;flex-direction:column;gap:20px">
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">Readable spaces</span>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#D9D9D9;border:1px solid #D9D9D9">
+                    <div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:5px"><span style="font:400 26px/1 Arial,Helvetica,sans-serif;color:#000">4</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666">readable</span></div>
+                    <div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:5px"><span style="font:400 26px/1 Arial,Helvetica,sans-serif;color:#8A5A00">2</span><span style="font:400 13px/1.4 Arial,Helvetica,sans-serif;color:#666">withheld</span></div>
+                  </div>
+                  <span style="font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#666">Withheld pages are counted, never named.</span>
+                </div>
+                <div style="background:#fff;border:1px solid #D9D9D9;padding:20px;display:flex;flex-direction:column;gap:12px">
+                  <span style="font:400 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#666">This machine</span>
+                  <span style="font:400 14px/1.55 Arial,Helvetica,sans-serif;color:#4D4D4D">Conversation history is stored locally and never leaves this machine.</span>
+                  <button type="button" onClick="{{ clearHistory }}" style="height:40px;padding:0 16px;border:1px solid #808080;background:#fff;color:#B0132B;font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px" style-hover="border-color:#B0132B">Clear all history</button>
+                </div>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0;max-width:980px;border-left:3px solid #808080;background:#F8F8F8;border-top:1px solid #D9D9D9;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:14px 18px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:#4D4D4D">{{ note }}</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:16px;z-index:80;animation:krise 160ms ease;box-shadow:0 4px 12px rgba(0,0,0,.18)">
+    <span style="font:400 14px/1.5 Arial,Helvetica,sans-serif">{{ toast }}</span>
+    <button type="button" onClick="{{ clearToast }}" aria-label="Dismiss" style="border:0;background:none;color:#CCCCCC;font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer">✕</button>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:960},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Login&quot;,&quot;Chat&quot;,&quot;Browse&quot;,&quot;Insights&quot;,&quot;Account&quot;],&quot;default&quot;:&quot;Login&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
+const USER = { name: 'D. Kaur', email: 'd.kaur@internal', initials: 'DK', staffId: '4471820' };
+
+const SOURCES = [
+  { n: '1', title: 'Credential rotation runbook', crumb: 'Platform Engineering › Security › Credentials', id: 'cr-runbook' },
+  { n: '2', title: 'Secrets management standard', crumb: 'Security Standards › Cryptography', id: 'secrets-std' },
+  { n: '3', title: 'Service account lifecycle', crumb: 'Identity › Accounts', id: 'svc-lifecycle' }
+];
+
+const RETURNED = [
+  { n: '1', withheld: true, reason: 'You do not have access' },
+  { n: '2', withheld: true, reason: 'You do not have access' },
+  { n: '3', withheld: false, title: 'Signing key revocation', crumb: 'Security Standards › Cryptography', reason: 'Empty page — no body to retrieve' }
+];
+
+const STEPS = [
+  { n: '1', label: 'Question asked', badge: '', ms: '0.0s' },
+  { n: '2', label: 'Keyword variations added', badge: 'MODEL', ms: '0.6s' },
+  { n: '3', label: 'Permissions resolved', badge: 'PERM', ms: '0.2s' },
+  { n: '4', label: 'Index and graph searched', badge: '', ms: '0.4s' },
+  { n: '5', label: 'Pages retrieved', badge: 'PERM', ms: '0.9s' },
+  { n: '6', label: 'Answer composed', badge: 'MODEL', ms: '0.3s' }
+];
+
+const ANSWERS = {
+  answered: 'Rotate a service credential from the Vault console rather than editing the secret in place. Raise a change record first, generate the replacement in Vault, then update the consuming service before revoking the old value [1]. Payments services keep a second copy in the regional keystore, so both must change inside the same window [2]. Non-human accounts expire after 90 days whether or not they are rotated [3].',
+  owner: 'The fraud scoring service is owned by the Financial Crime Platform team, with Priya Menon as the named service owner [1]. Change approval runs through their weekly review, and out-of-hours incidents route to the Pulse on-call rota [2].',
+  followup: 'Yes — the change record must be raised before the replacement is generated, not after. The runbook treats an unrecorded rotation as an audit finding even when the rotation itself succeeded [1]. For payments services the record must name both the Vault path and the regional keystore entry [2].'
+};
+
+class Component extends DCLogic {
+  state = {
+    screen: 'login', notes: true,
+    authTab: 'creds', staffId: '', password: '', trustDevice: true,
+    sidError: '', pwdError: '', authBanner: '', authStage: 'idle',
+    view: 'chat', sidebarOpen: true, menuOpen: false,
+    convos: [], activeId: 'c1', draft: '', sending: false, openTrace: null, expanded: {},
+    terms: ['secret rotation procedure', 'rotate API key', 'renew credentials vault'],
+    search: '', historyCleared: false,
+    facets: { Domain: 'Identity › Credentials', Type: 'Runbook' },
+    pageId: 'cr-runbook', scope: 'Organisation', period: 'Last 30 days', granularity: 'Daily',
+    toast: ''
+  };
+
+  componentDidMount() {
+    if (this.props.showNotes === false) this.setState({ notes: false });
+    this.setState({ convos: this.seed() });
+    document.addEventListener('keydown', this.onDocKey, true);
+    document.addEventListener('mousedown', this.onDocDown, true);
+    const start = this.props.startScreen;
+    if (start === 'Chat') this.setState({ screen: 'app', view: 'chat' });
+    else if (start === 'Browse') this.setState({ screen: 'app', view: 'browse' });
+    else if (start === 'Insights') this.setState({ screen: 'app', view: 'insights' });
+    else if (start === 'Account') this.setState({ screen: 'app', view: 'account' });
+  }
+
+  onDocKey = (e) => {
+    if (e.key === 'Escape' && this.state.menuOpen) this.setState({ menuOpen: false });
+  };
+
+  onDocDown = (e) => {
+    if (!this.state.menuOpen) return;
+    const host = this.menuHost;
+    if (host && e.target && host.contains(e.target)) return;
+    this.setState({ menuOpen: false });
+  };
+
+  setMenuHost = (el) => { this.menuHost = el; };
+
+  componentWillUnmount() {
+    clearTimeout(this.t); clearTimeout(this.toastT); clearTimeout(this.authT);
+    document.removeEventListener('keydown', this.onDocKey, true);
+    document.removeEventListener('mousedown', this.onDocDown, true);
+  }
+
+  seed = () => [
+    {
+      id: 'c1', title: 'How do I rotate a service credential?', when: '2 min ago',
+      messages: [
+        { id: 'm1', role: 'user', text: 'How do I rotate a service credential?' },
+        { id: 'm2', role: 'assistant', outcome: 'answered', text: ANSWERS.answered, used: '3 of 8 links used', withheld: 2 },
+        { id: 'm3', role: 'user', text: 'Does the change record have to come first?' },
+        { id: 'm4', role: 'assistant', outcome: 'answered', text: ANSWERS.followup, used: '2 of 8 links used', withheld: 2 }
+      ]
+    },
+    {
+      id: 'c2', title: 'Which team owns the fraud scoring service?', when: '18 min ago',
+      messages: [
+        { id: 'm1', role: 'user', text: 'Which team owns the fraud scoring service?' },
+        { id: 'm2', role: 'assistant', outcome: 'answered', text: ANSWERS.owner, used: '2 of 5 links used', withheld: 0 }
+      ]
+    },
+    {
+      id: 'c3', title: 'How do I revoke a compromised signing key?', when: '1 h ago',
+      messages: [
+        { id: 'm1', role: 'user', text: 'How do I revoke a compromised signing key?' },
+        { id: 'm2', role: 'assistant', outcome: 'none' }
+      ]
+    },
+    {
+      id: 'c4', title: 'What is the payment retry policy?', when: '1 h ago',
+      messages: [
+        { id: 'm1', role: 'user', text: 'What is the payment retry policy?' },
+        { id: 'm2', role: 'assistant', outcome: 'refused' }
+      ]
+    },
+    {
+      id: 'c5', title: 'Where are the on-call runbooks for Pulse?', when: 'Yesterday',
+      messages: [
+        { id: 'm1', role: 'user', text: 'Where are the on-call runbooks for Pulse?' },
+        { id: 'm2', role: 'assistant', outcome: 'answered', text: 'Pulse keeps its on-call material under Platform Engineering › Pulse › Operations, split by severity [1]. The escalation ladder and the paging schedule are maintained separately by the Reliability team [2].', used: '4 of 9 links used', withheld: 1 }
+      ]
+    }
+  ];
+
+  tone = {
+    ok: { fg: '#1B6B3A', bg: '#F2F8F4', bd: '#BFD9C6', icon: '✓' },
+    bad: { fg: '#B0132B', bg: '#FCF3F4', bd: '#EBC3C9', icon: '✕' },
+    warn: { fg: '#8A5A00', bg: '#FBF7EE', bd: '#E6D3AE', icon: '!' },
+    info: { fg: '#0B3B60', bg: '#F3F7FA', bd: '#C3D4E0', icon: '●' },
+    off: { fg: '#4D4D4D', bg: '#F8F8F8', bd: '#D9D9D9', icon: '–' }
+  };
+  ch = (text, t) => Object.assign({ text }, this.tone[t] || this.tone.off);
+
+  outcomeOf = (c) => {
+    const last = c.messages.filter((m) => m.role === 'assistant').slice(-1)[0];
+    return last ? last.outcome : 'new';
+  };
+  outcomeChip = (o) => o === 'answered' ? this.ch('Answered', 'ok')
+    : o === 'none' ? this.ch('No answer', 'warn')
+    : o === 'refused' ? this.ch('Refused', 'bad')
+    : this.ch('Not asked yet', 'off');
+  outcomeDot = (o) => o === 'answered' ? '#1B6B3A' : o === 'none' ? '#8A5A00' : o === 'refused' ? '#B0132B' : '#CCCCCC';
+
+  notify = (msg) => {
+    this.setState({ toast: msg });
+    clearTimeout(this.toastT);
+    this.toastT = setTimeout(() => this.setState({ toast: '' }), 3200);
+  };
+
+  classify = (q) => {
+    const s = (q || '').toLowerCase();
+    if (s.indexOf('signing key') > -1 || s.indexOf('revoke') > -1) return 'none';
+    if (s.indexOf('retry policy') > -1) return 'refused';
+    return 'answered';
+  };
+
+  answerFor = (q) => {
+    const s = (q || '').toLowerCase();
+    if (s.indexOf('own') > -1 || s.indexOf('team') > -1) return ANSWERS.owner;
+    if (s.indexOf('change record') > -1 || s.indexOf('first') > -1) return ANSWERS.followup;
+    return ANSWERS.answered;
+  };
+
+  submitLogin = () => {
+    const s = this.state;
+    if (s.authStage === 'loading') return;
+    if (s.authTab === 'sso') {
+      this.runAuth();
+      return;
+    }
+    const errs = { sidError: '', pwdError: '' };
+    const id = s.staffId.trim();
+    if (!id) errs.sidError = 'Enter your staff ID.';
+    else if (!/^\d{6,8}$/.test(id)) errs.sidError = 'A staff ID is 6 to 8 digits.';
+    if (!s.password) errs.pwdError = 'Enter your password.';
+    else if (s.password.length < 8) errs.pwdError = 'Password must be at least 8 characters.';
+    if (errs.sidError || errs.pwdError) {
+      return this.setState(Object.assign({ authBanner: 'Check the highlighted fields and try again.' }, errs));
+    }
+    this.setState({ sidError: '', pwdError: '', authBanner: '' });
+    this.runAuth();
+  };
+
+  runAuth = () => {
+    this.setState({ authStage: 'loading' });
+    clearTimeout(this.authT);
+    this.authT = setTimeout(() => {
+      this.setState({ authStage: 'success' });
+      this.authT = setTimeout(() => this.setState({ screen: 'app', view: 'chat', authStage: 'idle' }), 900);
+    }, 900);
+  };
+
+  send = (text) => {
+    const q = (text === undefined ? this.state.draft : text).trim();
+    if (!q || this.state.sending) return;
+    const outcome = this.classify(q);
+    const stamp = Date.now();
+    this.setState((st) => {
+      const convos = st.convos.map((c) => {
+        if (c.id !== st.activeId) return c;
+        return Object.assign({}, c, {
+          title: c.messages.length === 0 ? q : c.title,
+          when: 'Just now',
+          messages: c.messages.concat([{ id: 'u' + stamp, role: 'user', text: q }])
+        });
+      });
+      return { convos, draft: '', sending: true, openTrace: null };
+    });
+    clearTimeout(this.t);
+    this.t = setTimeout(() => {
+      this.setState((st) => ({
+        sending: false,
+        convos: st.convos.map((c) => c.id !== st.activeId ? c : Object.assign({}, c, {
+          messages: c.messages.concat([{
+            id: 'a' + stamp, role: 'assistant', outcome,
+            text: outcome === 'answered' ? this.answerFor(q) : undefined,
+            used: '3 of 8 links used', withheld: 2
+          }])
+        }))
+      }));
+    }, 1100);
+  };
+
+  newConversation = () => {
+    const id = 'c' + Date.now();
+    this.setState((st) => ({
+      convos: [{ id, title: 'New conversation', when: 'Just now', messages: [] }].concat(st.convos),
+      activeId: id, view: 'chat', draft: '', openTrace: null, search: '', historyCleared: false
+    }));
+  };
+
+  renderVals() {
+    const s = this.state;
+    const RED = '#B0132B';
+
+    const q = s.search.trim().toLowerCase();
+    const visible = s.convos.filter((c) => !q || c.title.toLowerCase().indexOf(q) > -1);
+    const active = s.convos.filter((c) => c.id === s.activeId)[0] || s.convos[0];
+
+    const routes = {
+      chat: 'localhost:7391/c/' + (active ? active.id : 'new'),
+      browse: 'localhost:7391/browse',
+      page: 'localhost:7391/page/' + s.pageId,
+      insights: 'localhost:7391/insights',
+      account: 'localhost:7391/account'
+    };
+
+    const messages = (active ? active.messages : []).map((m) => {
+      if (m.role === 'user') return { key: m.id, isUser: true, isAssistant: false, text: m.text };
+      const outcome = m.outcome;
+      const full = m.text || '';
+      const LIMIT = 280;
+      const isLong = full.length > LIMIT;
+      const isExpanded = !!s.expanded[m.id];
+      const shown = isLong && !isExpanded
+        ? full.slice(0, LIMIT).replace(/\s+\S*$/, '') + '…'
+        : full;
+      return {
+        key: m.id, isUser: false, isAssistant: true,
+        answered: outcome === 'answered', none: outcome === 'none', refused: outcome === 'refused',
+        text: shown, used: m.used,
+        isLong: isLong,
+        expandLabel: isExpanded ? 'Show less' : 'Show more',
+        toggleExpand: () => this.setState((st) => ({
+          expanded: Object.assign({}, st.expanded, { [m.id]: !st.expanded[m.id] })
+        })),
+        withheldLabel: m.withheld > 0 ? m.withheld + ' withheld' : 'none withheld',
+        hasWithheld: m.withheld > 0,
+        traceOpen: s.openTrace === m.id,
+        traceCaret: s.openTrace === m.id ? 'Hide how this was found −' : 'How this answer was found +',
+        toggleTrace: () => this.setState({ openTrace: s.openTrace === m.id ? null : m.id }),
+        sources: SOURCES.map((r) => Object.assign({}, r, {
+          open: () => this.setState({ view: 'page', pageId: r.id })
+        })),
+        returned: RETURNED.map((r) => Object.assign({}, r, {
+          chip: r.withheld ? this.ch('Withheld', 'bad') : this.ch('Empty page', 'warn'),
+          titleText: r.withheld ? '— title withheld —' : r.title,
+          titleColor: r.withheld ? '#808080' : '#1A1A1A',
+          hasCrumb: !r.withheld
+        })),
+        steps: STEPS.map((st) => Object.assign({}, st, { hasBadge: !!st.badge }))
+      };
+    });
+
+    const activeFacets = Object.keys(s.facets).map((k) => ({
+      key: k, label: k + ': ' + s.facets[k],
+      clear: () => { const f = Object.assign({}, s.facets); delete f[k]; this.setState({ facets: f }); }
+    }));
+    const chosen = Object.keys(s.facets).map((k) => s.facets[k]);
+    const results = PAGES.filter((p) => chosen.every((v) => p.tags.indexOf(String(v).split(' › ')[0]) > -1 || p.tags.indexOf(v) > -1));
+    const page = PAGES.filter((p) => p.id === s.pageId)[0] || PAGES[0];
+
+    const sideLink = (label, key, glyph, go) => ({
+      label, glyph, go,
+      bg: s.view === key ? '#F8F8F8' : 'transparent',
+      fg: s.view === key ? '#000000' : '#4D4D4D',
+      bd: s.view === key ? RED : 'transparent',
+      railStyle: 'width:38px;height:38px;border:1px solid ' + (s.view === key ? RED : '#D9D9D9') +
+        ';background:' + (s.view === key ? '#FCF3F4' : '#fff') + ';color:' + (s.view === key ? RED : '#4D4D4D') +
+        ';font:400 14px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;flex:none'
+    });
+
+    return {
+      isLogin: s.screen === 'login',
+      isApp: s.screen === 'app',
+      notes: s.notes,
+      toggleNotes: () => this.setState({ notes: !s.notes }),
+      route: routes[s.view] || routes.chat,
+      userName: USER.name, userEmail: USER.email, userInitials: USER.initials,
+      machineName: 'DEV-LDN-4471',
+      serviceHost: 'kb.internal · localhost:7391',
+      spacesLabel: '4 spaces readable',
+
+      authForm: s.authStage !== 'success',
+      authSuccess: s.authStage === 'success',
+      authLoading: s.authStage === 'loading',
+      loginLabel: s.authStage === 'loading'
+        ? (s.authTab === 'sso' ? 'Authenticating…' : 'Signing in…')
+        : (s.authTab === 'sso' ? 'Continue with single sign-on' : 'Sign in'),
+      authTabs: [
+        { label: 'Staff credentials', on: s.authTab === 'creds', bg: s.authTab === 'creds' ? '#1A1A1A' : '#fff', fg: s.authTab === 'creds' ? '#fff' : '#333', pick: () => this.setState({ authTab: 'creds', authBanner: '' }) },
+        { label: 'Single sign-on', on: s.authTab === 'sso', bg: s.authTab === 'sso' ? '#1A1A1A' : '#fff', fg: s.authTab === 'sso' ? '#fff' : '#333', pick: () => this.setState({ authTab: 'sso', authBanner: '' }) }
+      ],
+      isCreds: s.authTab === 'creds',
+      isSsoTab: s.authTab === 'sso',
+      staffId: s.staffId, password: s.password, trustDevice: s.trustDevice,
+      onStaffId: (e) => this.setState({ staffId: e.target.value, sidError: '', authBanner: '' }),
+      onPassword: (e) => this.setState({ password: e.target.value, pwdError: '', authBanner: '' }),
+      onLoginKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.submitLogin(); } },
+      toggleTrust: () => this.setState({ trustDevice: !s.trustDevice }),
+      sidError: s.sidError, pwdError: s.pwdError, authBanner: s.authBanner,
+      sidBorder: s.sidError ? RED : '#808080',
+      pwdBorder: s.pwdError ? RED : '#808080',
+      submitLogin: this.submitLogin,
+      forgotPassword: () => this.notify('Password reset raised with the service desk · you will receive a call-back'),
+
+      showSidebar: s.view === 'chat',
+      sidebarOpen: s.sidebarOpen,
+      sidebarClosed: !s.sidebarOpen,
+      sidebarStyle: 'width:' + (s.sidebarOpen ? '272px' : '70px') +
+        ';flex:none;background:#fff;border-right:1px solid #D9D9D9;transition:width 200ms ease;overflow:hidden',
+      sidebarToggleLabel: s.sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar',
+      toggleSidebar: () => this.setState({ sidebarOpen: !s.sidebarOpen }),
+      expandForSearch: () => this.setState({ sidebarOpen: true }),
+
+      menuOpen: s.menuOpen,
+      menuHostRef: this.setMenuHost,
+      menuBorder: s.menuOpen ? '#808080' : '#D9D9D9',
+      menuBg: s.menuOpen ? '#F8F8F8' : '#fff',
+      toggleMenu: () => this.setState({ menuOpen: !s.menuOpen }),
+      menuItems: [
+        { label: 'Account and profile', fg: '#1A1A1A', hasHint: false, go: () => this.setState({ view: 'account', menuOpen: false }) },
+        { label: 'Insights', fg: '#1A1A1A', hasHint: true, hint: 'Org and you', go: () => this.setState({ view: 'insights', menuOpen: false }) },
+        { label: 'Log out', fg: RED, hasHint: false, go: () => this.setState({ screen: 'login', menuOpen: false, authStage: 'idle', password: '', view: 'chat' }) }
+      ],
+
+      goChat: () => this.setState({ view: 'chat', menuOpen: false }),
+      convos: visible.map((c) => {
+        const o = this.outcomeOf(c);
+        const on = c.id === s.activeId && s.view === 'chat';
+        return {
+          title: c.title, meta: c.when, active: on, dot: this.outcomeDot(o),
+          titleFg: on ? '#000000' : '#1A1A1A',
+          rowStyle: 'display:flex;align-items:flex-start;gap:8px;padding:11px 16px;border-left:3px solid ' +
+            (on ? RED : 'transparent') + ';background:' + (on ? '#F8F8F8' : 'transparent'),
+          open: () => this.setState({ activeId: c.id, view: 'chat', openTrace: null }),
+          remove: () => {
+            const rest = s.convos.filter((x) => x.id !== c.id);
+            this.setState({
+              convos: rest,
+              activeId: s.activeId === c.id ? (rest[0] ? rest[0].id : null) : s.activeId
+            });
+            this.notify('Conversation deleted from this machine');
+          }
+        };
+      }),
+      railConvos: s.convos.slice(0, 5).map((c) => {
+        const on = c.id === s.activeId && s.view === 'chat';
+        return {
+          title: c.title, initial: c.title.charAt(0).toUpperCase(),
+          railStyle: 'width:38px;height:38px;border:1px solid ' + (on ? RED : '#D9D9D9') +
+            ';background:' + (on ? '#FCF3F4' : '#fff') + ';color:' + (on ? RED : '#4D4D4D') +
+            ';font:400 13px/1 Arial,Helvetica,sans-serif;cursor:pointer;border-radius:2px;flex:none',
+          open: () => this.setState({ activeId: c.id, view: 'chat', openTrace: null })
+        };
+      }),
+      convoCount: visible.length + ' of ' + s.convos.length,
+      noConvos: visible.length === 0,
+      emptyConvoTitle: s.convos.length === 0 ? 'No conversations yet' : 'Nothing matches your search',
+      emptyConvoBody: s.convos.length === 0
+        ? 'Start one with New conversation. History stays on this machine.'
+        : 'Clear the search to see every conversation.',
+      search: s.search, hasSearch: !!s.search,
+      onSearch: (e) => this.setState({ search: e.target.value }),
+      clearSearch: () => this.setState({ search: '' }),
+      newConversation: this.newConversation,
+      clearHistory: () => { this.setState({ convos: [], activeId: null, search: '' }); this.notify('History cleared for this machine'); },
+      sideLinks: [
+        sideLink('Browse by facet', 'browse', '⌗', () => this.setState({ view: 'browse', menuOpen: false })),
+        sideLink('Account and profile', 'account', '◍', () => this.setState({ view: 'account', menuOpen: false }))
+      ],
+      railLinks: [
+        sideLink('Browse by facet', 'browse', '⌗', () => this.setState({ view: 'browse', menuOpen: false })),
+        sideLink('Insights', 'insights', '◔', () => this.setState({ view: 'insights', menuOpen: false }))
+      ],
+
+      vChat: s.view === 'chat',
+      vBrowse: s.view === 'browse',
+      vPage: s.view === 'page',
+      vInsights: s.view === 'insights',
+      vAccount: s.view === 'account',
+
+      hasActive: !!active,
+      noActive: !active,
+      convoTitle: active ? active.title : '',
+      convoMeta: active ? (this.outcomeOf(active) === 'new' ? 'Not asked yet' : active.when) : '',
+      messages: messages,
+      isEmptyConvo: !!active && active.messages.length === 0,
+      sending: s.sending,
+      draft: s.draft,
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      onComposerKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); } },
+      sendMessage: () => this.send(),
+      notSending: !s.sending,
+      sendStyle: (s.draft.trim() && !s.sending)
+        ? 'width:36px;height:36px;border:1px solid #B0132B;background:#B0132B;color:#fff;cursor:pointer;border-radius:2px;display:flex;align-items:center;justify-content:center;flex:none'
+        : 'width:36px;height:36px;border:1px solid #E5E5E5;background:#F8F8F8;color:#999;cursor:not-allowed;border-radius:2px;display:flex;align-items:center;justify-content:center;flex:none',
+      starters: [
+        { label: 'How do I rotate a service credential?', detail: 'Answered from 3 readable pages' },
+        { label: 'How do I revoke a compromised signing key?', detail: 'Shows the nothing-retrieved state' },
+        { label: 'What is the payment retry policy?', detail: 'Shows the refused state' }
+      ].map((x) => Object.assign({}, x, { go: () => this.send(x.label) })),
+      requestAccess: () => this.notify('Access request raised for 2 withheld pages · routed to the space owners'),
+      retrySearch: () => this.notify('Retrying · resolving readable spaces'),
+      checkStatus: () => this.notify('Opening the platform status page in the wiki'),
+      openInWiki: () => this.notify('Opening in the wiki · read under wiki permissions'),
+      terms: s.terms.map((t) => ({
+        label: t,
+        remove: () => this.setState({ terms: s.terms.filter((x) => x !== t) })
+      })),
+      termCount: 'Added by the model — ' + s.terms.length + ', each removable',
+
+      facetGroups: FACET_GROUPS.map((g) => Object.assign({}, g, {
+        options: g.values.map((v) => ({
+          label: v, on: s.facets[g.name] === v,
+          bg: s.facets[g.name] === v ? '#F8F8F8' : '#FFFFFF',
+          fg: s.facets[g.name] === v ? '#000000' : '#4D4D4D',
+          bd: s.facets[g.name] === v ? RED : 'transparent',
+          pick: () => {
+            const f = Object.assign({}, s.facets);
+            if (f[g.name] === v) delete f[g.name]; else f[g.name] = v;
+            this.setState({ facets: f });
+          }
+        }))
+      })),
+      activeFacets: activeFacets,
+      hasFacets: activeFacets.length > 0,
+      results: results.map((p) => Object.assign({}, p, {
+        open: () => this.setState({ view: 'page', pageId: p.id })
+      })),
+      resultCount: results.length + (results.length === 1 ? ' page' : ' pages'),
+      resultsEmpty: results.length === 0,
+      emptyCause: activeFacets.map((f) => f.label).join(' · '),
+      clearFacets: () => this.setState({ facets: {} }),
+
+      page: page,
+      pageCrumb: page.crumb + ' › ' + page.title,
+      pageFacets: PAGE_FACETS.map((f) => Object.assign({}, f, {
+        badgeFg: f.by === 'RULE' ? '#4D4D4D' : '#0B3B60',
+        badgeBd: f.by === 'RULE' ? '#D9D9D9' : '#C3D4E0',
+        badgeBg: f.by === 'RULE' ? '#F8F8F8' : '#F3F7FA'
+      })),
+      backToBrowse: () => this.setState({ view: 'browse' }),
+      askAboutPage: () => { this.setState({ view: 'chat' }); this.send('What does the ' + page.title.toLowerCase() + ' say?'); },
+
+      scopes: ['Organisation', 'You'].map((v) => ({
+        label: v,
+        bg: s.scope === v ? '#1A1A1A' : '#FFFFFF',
+        fg: s.scope === v ? '#FFFFFF' : '#333333',
+        pick: () => this.setState({ scope: v })
+      })),
+      grains: ['Daily', 'Weekly'].map((v) => ({
+        label: v,
+        bg: s.granularity === v ? '#1A1A1A' : '#FFFFFF',
+        fg: s.granularity === v ? '#FFFFFF' : '#333333',
+        pick: () => this.setState({ granularity: v })
+      })),
+      period: s.period,
+      onPeriod: (e) => this.setState({ period: e.target.value }),
+      kpis: KPIS.map((k) => Object.assign({}, k, {
+        color: k.dir === 'up' ? '#1B6B3A' : '#B0132B',
+        arrow: k.dir === 'up' ? '▲' : '▼'
+      })),
+      trendAsked: s.granularity === 'Daily'
+        ? '0,120 120,104 240,110 360,78 480,86 600,58 720,52 840,40'
+        : '0,132 120,118 240,96 360,84 480,70 600,62 720,48 840,38',
+      trendAnswered: s.granularity === 'Daily'
+        ? '0,148 120,136 240,142 360,110 480,118 600,92 720,84 840,70'
+        : '0,158 120,146 240,128 360,116 480,102 600,94 720,80 840,68',
+      trendNone: s.granularity === 'Daily'
+        ? '0,176 120,170 240,174 360,162 480,166 600,158 720,154 840,150'
+        : '0,180 120,174 240,168 360,164 480,160 600,156 720,152 840,148',
+      trendLabels: s.granularity === 'Daily'
+        ? [{ label: '01 Aug' }, { label: '08 Aug' }, { label: '15 Aug' }, { label: '22 Aug' }, { label: '29 Aug' }]
+        : [{ label: 'W27' }, { label: 'W29' }, { label: 'W31' }, { label: 'W33' }, { label: 'W35' }],
+      mostAsked: MOST_ASKED.map((r, i) => Object.assign({}, r, {
+        rank: String(i + 1),
+        go: () => { this.setState({ view: 'chat' }); this.newConversation(); setTimeout(() => this.send(r.q), 0); }
+      })),
+      gaps: GAPS.map((r, i) => Object.assign({}, r, {
+        rank: String(i + 1),
+        go: () => { this.setState({ view: 'chat' }); this.newConversation(); setTimeout(() => this.send(r.q), 0); }
+      })),
+      cited: CITED.map((r, i) => Object.assign({}, r, { rank: String(i + 1) })),
+
+      toast: s.toast, hasToast: !!s.toast,
+      clearToast: () => this.setState({ toast: '' }),
+      note: NOTES[s.view] || '',
+      hasNote: s.notes && !!NOTES[s.view]
+    };
+  }
+}
+
+const PAGES = [
+  { id: 'cr-runbook', title: 'Credential rotation runbook', crumb: 'Platform Engineering › Security › Credentials', tags: ['Identity', 'Runbook', 'AWS'] },
+  { id: 'svc-lifecycle', title: 'Service account lifecycle', crumb: 'Identity › Accounts', tags: ['Identity', 'Runbook'] },
+  { id: 'vault-onboarding', title: 'Vault onboarding guide', crumb: 'Platform Engineering › Security › Vault', tags: ['Identity', 'Runbook', 'Kubernetes'] },
+  { id: 'secrets-std', title: 'Secrets management standard', crumb: 'Security Standards › Cryptography', tags: ['Identity', 'Standard'] },
+  { id: 'retry-policy', title: 'Payment retry policy', crumb: 'Payments › Reliability', tags: ['Payments', 'Standard', 'AWS'] },
+  { id: 'fraud-owners', title: 'Fraud scoring service ownership', crumb: 'Fraud › Services', tags: ['Fraud', 'ADR', 'Kubernetes'] }
+];
+
+const FACET_GROUPS = [
+  { name: 'Domain', values: ['Payments', 'Fraud', 'Identity › Credentials', 'None of these'] },
+  { name: 'Type', values: ['Runbook', 'Standard', 'ADR', 'How-to', 'None of these'] },
+  { name: 'Platform', values: ['AWS', 'Kubernetes', 'On-prem', 'None of these'] }
+];
+
+const PAGE_FACETS = [
+  { name: 'Domain', value: 'Identity', by: 'RULE', conf: '1.00' },
+  { name: 'Document type', value: 'Runbook', by: 'RULE', conf: '1.00' },
+  { name: 'Platform', value: 'AWS', by: 'MODEL', conf: '0.82' },
+  { name: 'Language', value: 'None of these', by: 'MODEL', conf: '0.87' }
+];
+
+const KPIS = [
+  { label: 'Questions asked', value: '1,284', delta: '+14%', dir: 'up' },
+  { label: 'Answered', value: '71%', delta: '+3%', dir: 'up' },
+  { label: 'No answer', value: '22%', delta: '−2%', dir: 'down' },
+  { label: 'Refused', value: '7%', delta: '+1%', dir: 'up' },
+  { label: 'Median time', value: '2.4s', delta: '−0.3s', dir: 'down' },
+  { label: 'People asking', value: '96', delta: '+8', dir: 'up' }
+];
+
+const MOST_ASKED = [
+  { q: 'How do I rotate a service credential?', n: '84' },
+  { q: 'Who owns the fraud scoring service?', n: '61' },
+  { q: 'What is the payment retry policy?', n: '47' },
+  { q: 'How do I get access to Pulse?', n: '39' }
+];
+
+const GAPS = [
+  { q: 'How do I revoke a signing key?', n: '31' },
+  { q: 'What is the SLA for inbound payments?', n: '24' },
+  { q: 'Who approves a schema change?', n: '19' },
+  { q: 'Where are the DR runbooks?', n: '12' }
+];
+
+const CITED = [
+  { q: 'Credential rotation runbook', n: '112' },
+  { q: 'Secrets management standard', n: '88' },
+  { q: 'Service account lifecycle', n: '70' },
+  { q: 'Change record procedure', n: '55' }
+];
+
+const NOTES = {
+  chat: 'Ask and History are now one surface. The sidebar is the history — selecting a conversation restores it, and the composer continues it, so a follow-up is the same gesture as a first question. Collapsed, the sidebar keeps New conversation, search and the five most recent conversations as initials with tooltips.',
+  browse: 'Reached from the sidebar rather than a top tab. "None of these" remains a real, selectable facet value. Cards carry title, breadcrumb and facets — no excerpt exists to show.',
+  page: 'Everything the shared service holds about a page, and nothing more. The primary action leaves the product; the secondary action asks about the page, which returns you to the chat.',
+  insights: 'Moved into the account dropdown. Scope toggles between the whole organisation and your own questions. Clicking a question in Most asked or Coverage gaps opens a new conversation and asks it.',
+  account: 'Reached from the account dropdown. Session and permission facts only — the product holds no profile of its own beyond what the wiki session provides.'
+};
+</script>
+</body>
+</html>
